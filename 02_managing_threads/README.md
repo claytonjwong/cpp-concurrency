@@ -1,11 +1,18 @@
 # Chapter 2: Managing Threads
 
-## Build + Run
+This code can be built with [CMake](https://cmake.org/) inclusive-or [Bazel](https://bazel.build/)
+
+---
+
+## CMake
+
+### Build + Run
 ```
-./run.sh
+./cmake_build_and_run.sh
 ```
 
-## Clean
+### Clean
 ```
-./clean.sh
+./cmake_clean.sh
 ```
+
