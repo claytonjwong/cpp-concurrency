@@ -1,3 +1,7 @@
 .vscode
 main
 output
+CMakeCache.txt
+CMakeFiles
+Makefile
+cmake_install.cmake
