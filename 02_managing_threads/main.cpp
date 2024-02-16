@@ -4,10 +4,13 @@
 
 using namespace std;
 
+thread::id main_thread_id;
+auto is_main_thread = []() { return this_thread::get_id() == main_thread_id; };
 void do_work(int n) {
     auto f = [](auto i) {
         ostringstream os;
-        os << "do_work(" << i << ")" << endl;
+        auto name = is_main_thread() ? "⭐️ main thread" : "💩 other thread";
+        os << name << ": " << this_thread::get_id() << " -> do_work(" << i << ")" << endl;
         return os.str();
     };
     for (auto i{ 0 }; i < n; ++i)
