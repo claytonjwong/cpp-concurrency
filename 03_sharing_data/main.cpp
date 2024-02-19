@@ -9,7 +9,7 @@ using LL = long long;
 using ThreadSafe_Stack = threadsafe_stack<LL>;
 
 int main() {
-    LL N = 100;
+    LL N = 10;
     ThreadSafe_Stack orig;
     for (LL i{ 0 }; i < N; ++i)
         orig.push(i);

@@ -28,16 +28,12 @@ public:
 };
 template <typename T>
 threadsafe_stack<T>::threadsafe_stack(const threadsafe_stack& other) {
-    std::lock(m, other.m);
-    std::lock_guard<std::mutex> my_lock(m, std::adopt_lock);
-    std::lock_guard<std::mutex> other_lock(other.m, std::adopt_lock);
+    std::scoped_lock(m, other.m);
     data = other.data;
 }
 template <typename T>
 threadsafe_stack<T>& threadsafe_stack<T>::operator=(const threadsafe_stack& other) {
-    std::lock(m, other.m);
-    std::lock_guard<std::mutex> my_lock(m, std::adopt_lock);
-    std::lock_guard<std::mutex> other_lock(other.m, std::adopt_lock);
+    std::scoped_lock(m, other.m);
     data = other.data;
     return *this;
 }
