@@ -1,8 +1,7 @@
 #include <exception>
 #include <memory>
 #include <mutex>
-#include <stack>
-#include <iostream>
+#include <vector>
 
 struct empty_stack : std::exception {
     const char* what() const throw() {
@@ -12,7 +11,7 @@ struct empty_stack : std::exception {
 
 template <typename T>
 class threadsafe_stack {
-    std::stack<T> data;
+    std::vector<T> data;
     mutable std::mutex m;
 public:
     threadsafe_stack() = default;
@@ -25,30 +24,35 @@ public:
     std::shared_ptr<T> pop();
     void pop(T& value);
     bool empty() const;
+    size_t size() const;
 };
 template <typename T>
 threadsafe_stack<T>::threadsafe_stack(const threadsafe_stack& other) {
-    std::lock_guard<std::mutex> lock(other.m);
+    std::lock(m, other.m);
+    std::lock_guard<std::mutex> my_lock(m, std::adopt_lock);
+    std::lock_guard<std::mutex> other_lock(other.m, std::adopt_lock);
     data = other.data;
 }
 template <typename T>
 threadsafe_stack<T>& threadsafe_stack<T>::operator=(const threadsafe_stack& other) {
-    std::lock_guard<std::mutex> lock(other.m);
+    std::lock(m, other.m);
+    std::lock_guard<std::mutex> my_lock(m, std::adopt_lock);
+    std::lock_guard<std::mutex> other_lock(other.m, std::adopt_lock);
     data = other.data;
     return *this;
 }
 template <typename T>
 void threadsafe_stack<T>::push(T value) {
     std::lock_guard<std::mutex> lock(m);
-    data.push(std::move(value));
+    data.push_back(std::move(value));
 }
 template <typename T>
 std::shared_ptr<T> threadsafe_stack<T>::pop() {
     std::lock_guard<std::mutex> lock(m);
     if (data.empty())
         throw empty_stack();
-    auto result = std::make_shared<T>(data.top());
-    data.pop();
+    auto result = std::make_shared<T>(data.back());
+    data.pop_back();
     return result;
 }
 template <typename T>
@@ -56,11 +60,15 @@ void threadsafe_stack<T>::pop(T& value) {
     std::lock_guard<std::mutex> lock(m);
     if (data.empty())
         throw empty_stack();
-    value = data.top();
-    data.pop();
+    value = data.back();
+    data.pop_back();
 }
 template <typename T>
 bool threadsafe_stack<T>::empty() const {
     std::lock_guard<std::mutex> lock(m);
     return data.empty();
+}
+template <typename T>
+size_t threadsafe_stack<T>::size() const {
+    return data.size();
 }
