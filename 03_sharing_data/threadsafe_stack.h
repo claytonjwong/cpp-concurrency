@@ -30,11 +30,17 @@ template <typename T>
 threadsafe_stack<T>::threadsafe_stack(const threadsafe_stack& other) {
     std::scoped_lock(m, other.m);
     data = other.data;
+    // I think this function should not exist, since
+    // the copy ctor is explicitly deleted for mutex m https://cplusplus.com/reference/mutex/mutex/mutex/
+    // which is not copied, but the data is!  WTF?
 }
 template <typename T>
 threadsafe_stack<T>& threadsafe_stack<T>::operator=(const threadsafe_stack& other) {
     std::scoped_lock(m, other.m);
     data = other.data;
+    // I think this function should not exist, since
+    // the copy ctor is explicitly deleted for mutex m https://cplusplus.com/reference/mutex/mutex/mutex/
+    // which is not copied, but the data is!  WTF?
     return *this;
 }
 template <typename T>
