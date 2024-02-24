@@ -23,12 +23,12 @@ int main() {
         std::cout << os.str(), std::flush(std::cout);
     };
     auto copy_and_pop_until_empty = [&]() {
-        threadsafe_stack<LL> copy{ orig };
+        auto copy{ orig };
         std::ostringstream os; os << "🍎 copy (" << copy.size() << ")";
         pop_until_empty(copy, os.str());
     };
     auto deep_and_pop_until_empty = [&]() {
-        threadsafe_stack<LL> deep = orig;
+        auto deep = orig;
         std::cout << deep.size() << std::endl;
         std::ostringstream os; os << "🍊 deep (" << deep.size() << ")";
         pop_until_empty(deep, os.str());
