@@ -166,3 +166,16 @@ INFO: Build completed successfully, 1 total action
 🍊 deep: 0
 ➜  03_sharing_data git:(main) ✗
 ```
+
+# Answer
+
+## TL;DR
+
+This ended up being the way the code was structured and the output buffered, then printed all at once per copy.
+
+## Details
+
+This problem exists when the main thread is allowed to pop off elements from the stack simultaneously with the other threads, and this problem was masked by the ostringstream buffer.  The solution is to join all threads before allowing the main thread to pop off elements, thus idempotently allowing the original copy's cardinality, ie. `N = 10` to remain immutable for each copy.
+
+* Problem: https://github.com/claytonjwong/cpp-concurrency/commit/7928f83b461a85e7a57d13fe440e2d8413c0e63d#diff-881c81536cae8afb3153a5d1db9f50367b8998e26f8e53ef15042dc0bfd5f8e8L43
+* Solution: https://github.com/claytonjwong/cpp-concurrency/commit/7928f83b461a85e7a57d13fe440e2d8413c0e63d#diff-881c81536cae8afb3153a5d1db9f50367b8998e26f8e53ef15042dc0bfd5f8e8R50
