@@ -45,7 +45,5 @@ int main() {
         return total;
     }).get();
 
-    std::cout << "ok byebye" << std::endl;
-
     return 0;
 }
