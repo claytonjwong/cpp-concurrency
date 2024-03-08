@@ -18,26 +18,16 @@ void gen(boost::promise<VI>& p) {
     p.set_value(std::move(A));
 }
 
-void sum(const VI& A, boost::promise<int>& p) {
-    p.set_value(std::accumulate(A.begin(), A.end(), 0));
-}
-
 int main() {
     boost::promise<VI> gen_promise;
     boost::future<VI> gen_future = gen_promise.get_future();
-    boost::thread t1{ gen, std::ref(gen_promise) };
+    boost::thread thread{ gen, std::ref(gen_promise) };
 
     auto and_then = gen_future.then([](boost::future<VI> gen_future) {  // and_then 0
         auto A = gen_future.get();
         std::cout << "A: ", std::copy(A.begin(), A.end(), std::ostream_iterator<int>(std::cout, " ")), std::cout << std::endl;
-        return A;
-    });
-
-    boost::promise<int> sum_promise;
-    boost::future<int> sum_future = sum_promise.get_future();
-    boost::thread t2{ sum, and_then.get(), std::ref(sum_promise) };
-
-    sum_future.then([](boost::future<int> sum_future) {  // and_then_1
+        return std::accumulate(A.begin(), A.end(), 0);
+    }).then([](boost::future<int> sum_future) {  // and_then_1
         auto total = sum_future.get();
         std::cout << "and_then_1...       " << total << std::endl;
         return total;
@@ -55,8 +45,7 @@ int main() {
         return total;
     }).get();
 
-    t1.join();
-    t2.join();
+    thread.join();
 
     return 0;
 }
