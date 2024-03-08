@@ -3,6 +3,11 @@
 cmake . && cmake --build . && ./cmake-bin/main
 ```
 
+# Dependencies
+
+* [Boost 1.84](https://www.boost.org/users/history/version_1_84_0.html)
+  * installed via `homebrew install boost` into the folder `/opt/homebrew/Cellar/boost/1.84.0_1`
+
 # Output
 ```
 ➜  promises git:(main) ✗ cmake . && cmake --build . && ./cmake-bin/main
@@ -21,7 +26,7 @@ cmake . && cmake --build . && ./cmake-bin/main
 C_COMPILER: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/cc
 CXX_COMPILER: /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/c++
 -- Found Boost: /opt/homebrew/lib/cmake/Boost-1.84.0/BoostConfig.cmake (found suitable version "1.84.0", minimum required is "1.84.0") found components: thread
-Boost: 1.84
+Boost: 1.84 include_directories(/opt/homebrew/include) target_link_libraries(Boost::thread)
 -- Configuring done
 -- Generating done
 -- Build files have been written to: /Users/claytonjwong/sandbox/cpp-concurrency/04_synchronization/promises
