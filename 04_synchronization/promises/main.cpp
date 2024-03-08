@@ -1,4 +1,8 @@
 #include <algorithm>
+#define BOOST_THREAD_PROVIDES_FUTURE
+// #define BOOST_THREAD_PROVIDES_FUTURE_CONTINUATION
+#include <boost/thread.hpp>
+#include <boost/thread/future.hpp>
 #include <future>
 #include <iostream>
 #include <numeric>
@@ -7,28 +11,28 @@
 
 using VI = std::vector<int>;
 
-void gen(std::promise<VI> p) {
+void gen(boost::promise<VI>& p) {
     auto N = 10;
     VI A(N);
     std::iota(A.begin(), A.end(), 1);
-    p.set_value(A);
+    p.set_value(std::move(A));
 }
 
-void sum(const VI& A, std::promise<int> p) {
+void sum(const VI& A, boost::promise<int>& p) {
     p.set_value(std::accumulate(A.begin(), A.end(), 0));
 }
 
 int main() {
-    std::promise<VI> gen_promise;
-    std::future<VI> gen_future = gen_promise.get_future();
-    std::thread t1{ gen, std::move(gen_promise) };
+    boost::promise<VI> gen_promise;
+    boost::future<VI> gen_future = gen_promise.get_future();
+    boost::thread t1{ gen, std::ref(gen_promise) };
     auto A = gen_future.get();
     std::cout << "A: ", std::copy(A.begin(), A.end(), std::ostream_iterator<int>(std::cout, " ")), std::cout << std::endl;
     t1.join();
 
-    std::promise<int> sum_promise;
-    std::future<int> sum_future = sum_promise.get_future();
-    std::thread t2{ sum, A, std::move(sum_promise) };
+    boost::promise<int> sum_promise;
+    boost::future<int> sum_future = sum_promise.get_future();
+    boost::thread t2{ sum, A, std::ref(sum_promise) };
     auto total = sum_future.get();
     std::cout << "sum: " << total << std::endl;
     t2.join();
